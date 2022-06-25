@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func UploadFile(w http.ResponseWriter, r *http.Request) {
@@ -190,7 +191,22 @@ func main() {
 		//panic(err)
 		log.Fatal("tidak dapat mendapatkan session")
 	}
+	theMine := []string{"one1", "two2", "three3"}
+	mineChan := make(chan string)
 
+	go func(mine []string) {
+		for _, item := range mine {
+			mineChan <- item
+		}
+	}(theMine)
+
+	go func() {
+		for i := 0; i < 3; i++ {
+			foundMe := <-mineChan
+			fmt.Println("received " + foundMe + "from you")
+		}
+	}()
+	<-time.After(time.Second * 5)
 	//UploadItem(sess)
 	//ListBucket(sess)
 
